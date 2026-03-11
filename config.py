@@ -2,10 +2,23 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    min_count:      int         = 5
-    freq_exponent:  float       = 0.75          # keep it smaller than 1 unless you want very random words
-    max_vocab:      int | None  = 50000         # set None to disable cap
-    unigram_seed:   int | None  = 1337          # set None for non-deterministic sampling
-    vocab_print:    int         = 100            # max items to print in Vocabulary.__str__
+    min_count:          int         = 5                 # Remove words with less than min_count occurences.
+    freq_exponent:      float       = 0.75              # Frequency exponent
+    unigram_seed:       int | None  = 1337              # Negative sampling seed
+    max_vocab:          int | None  = 50000             # Max vocabulary size
+    vocab_print:        int         = 100               # Vocab __str__ limit
+    table_size:         int         = 1000000           # Unigram table size (Deprecated)
 
-    table_size:     int         = 1000000
+    embedding_dim:      int         = 128               # Embedding width
+    window_size:        int         = 5                 # Context window
+    negatives:          int         = 5                 # Negatives per positive
+    batch_size:         int         = 1024              # Training batch size
+    epochs:             int         = 1                 # Training epochs
+    lr_start:           float       = 0.05              # Initial learning rate
+    lr_end:             float       = 0.005             # Final learning rate
+    train_tokens_limit: int | None  = None              # Cap train tokens
+    seed:               int | None  = 1337              # Training seed
+
+    embeddings_out:     str         = "embeddings.npy"  # Embeddings output path
+    vocab_out:          str         = "vocab.json"      # Vocab output path
+    loss_log_every:     int         = 1000              # Log loss interval
