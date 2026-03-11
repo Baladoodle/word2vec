@@ -40,3 +40,20 @@ def iterate_center_context(
             if j == i:
                 continue
             yield center_id, token_ids[j]
+
+
+def batch_pairs(pairs_iter, batch_size: int):
+    """Batch (center_id, context_id) pairs into numpy arrays."""
+    import numpy as np
+
+    centers: list[int] = []
+    contexts: list[int] = []
+    for center_id, context_id in pairs_iter:
+        centers.append(center_id)
+        contexts.append(context_id)
+        if len(centers) >= batch_size:
+            yield np.array(centers, dtype=np.int64), np.array(contexts, dtype=np.int64)
+            centers.clear()
+            contexts.clear()
+    if centers:
+        yield np.array(centers, dtype=np.int64), np.array(contexts, dtype=np.int64)
