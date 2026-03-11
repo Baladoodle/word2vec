@@ -5,6 +5,7 @@ from collections import Counter
 class Vocabulary:
     """A vocabulary for tokenizing text."""
     min_count: int = 5
+    max_size: int | None = None
 
     word2idx: dict[str, int] = field(default_factory=dict)
     idx2word: list[str]      = field(default_factory=list)
@@ -12,8 +13,11 @@ class Vocabulary:
 
     def build(self, tokens: list[str]) -> None:
         self.counts = Counter(tokens)
-        kept = [w for w, c in self.counts.items() if c >= self.min_count]
-        kept.sort()
+        kept = [(w, c) for w, c in self.counts.items() if c >= self.min_count]
+        kept.sort(key=lambda x: (-x[1], x[0]))
+        if self.max_size is not None:
+            kept = kept[: self.max_size]
+        kept = [w for w, _ in kept]
         self.idx2word = ["<UNK>"] + kept # <UNK> is reserved for unknown words
         self.word2idx = {w: i for i, w in enumerate(self.idx2word)}
 
@@ -30,4 +34,4 @@ class Vocabulary:
         return self.idx2word[idx]
     
     def lookup_index(self, token: str) -> int:
-        return self.word2idx[token]
+        return self.word2idx.get(token, 0)
