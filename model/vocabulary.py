@@ -14,7 +14,7 @@ class Vocabulary:
         self.counts = Counter(tokens)
         kept = [w for w, c in self.counts.items() if c >= self.min_count]
         kept.sort()
-        self.idx2word = ["<unknown>"] + kept # <unknown> is reserved for unknown words
+        self.idx2word = ["<UNK>"] + kept # <UNK> is reserved for unknown words
         self.word2idx = {w: i for i, w in enumerate(self.idx2word)}
 
     def encode(self, token: str) -> int:
