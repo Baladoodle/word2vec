@@ -7,8 +7,6 @@ def tokenize(text: str) -> list[str]:
     text = re.sub(r"[^a-z0-9\s]", "", text)
     return text.split()
 
-print(tokenize("Hello, world!"))
-
 def token_stream(text: list[str]) -> list[str]:
     """Build a token stream from a list of strings."""
 
@@ -19,5 +17,3 @@ def token_stream(text: list[str]) -> list[str]:
             continue
         tokens.extend(tokenize(line))
     return tokens
-
-print(token_stream(["Hello, world!", "This is a test."]))
