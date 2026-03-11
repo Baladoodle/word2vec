@@ -24,4 +24,10 @@ class Vocabulary:
         return len(self.idx2word)
     
     def __str__(self) -> str:
-        return str(self.counts)
+        return "\n".join(f"{w}: {c}" for w, c in self.counts.items() if c >= self.min_count)
+    
+    def lookup_token(self, idx: int) -> str:
+        return self.idx2word[idx]
+    
+    def lookup_index(self, token: str) -> int:
+        return self.word2idx[token]

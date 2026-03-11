@@ -7,13 +7,13 @@ def tokenize(text: str) -> list[str]:
     text = re.sub(r"[^a-z0-9\s]", "", text)
     return text.split()
 
-def token_stream(text: list[str]) -> list[str]:
-    """Build a token stream from a list of strings."""
+# def token_stream(text: list[str]) -> list[str]:
+#     """Build a token stream from a list of strings."""
 
-    tokens = []
-    for line in text:
-        line = line.strip()
-        if not line:
-            continue
-        tokens.extend(tokenize(line))
-    return tokens
+#     tokens = []
+#     for line in text:
+#         line = line.strip()
+#         if not line:
+#             continue
+#         tokens.extend(tokenize(line))
+#     return tokens
