@@ -1,6 +1,10 @@
 from datasets import load_dataset
 from data.corpus import token_stream
-from model.training import iter_negative_sampling_batches
+from model.training import (
+    init_embeddings,
+    iter_negative_sampling_batches,
+    negative_sampling_loss,
+)
 from model.vocabulary import Vocabulary
 from config import Config
 
@@ -15,6 +19,7 @@ vocab.build(tokens)
 print(vocab)
 
 token_ids = [vocab.encode(t) for t in tokens]
+w_in, w_out = init_embeddings(len(vocab), Config.embedding_dim, seed=Config.seed)
 
 for centers, contexts, negatives in iter_negative_sampling_batches(
     token_ids,
@@ -24,7 +29,8 @@ for centers, contexts, negatives in iter_negative_sampling_batches(
     negatives=Config.negatives,
     seed=Config.seed,
 ):
-    print(centers.shape, contexts.shape, negatives.shape)
+    loss = negative_sampling_loss(w_in, w_out, centers, contexts, negatives)
+    print(centers.shape, contexts.shape, negatives.shape, loss)
     break
 
 print(vocab.lookup_index("the"))

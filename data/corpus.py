@@ -21,8 +21,6 @@ def token_stream(lines: list[str], keep_punct: bool = True) -> list[str]:
         tokens.extend(tokenize(line, keep_punct=keep_punct))
     return tokens
 
-
-
 def iterate_center_context(
     token_ids: list[int],
     window_size: int,
