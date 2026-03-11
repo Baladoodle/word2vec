@@ -7,6 +7,7 @@ def build_unigram(
     table_size: int = Config.table_size,
     seed: int | None = Config.unigram_seed,
 ) -> np.ndarray: # one million
+    """Deprecated: use build_alias_table instead."""
 
     freq = np.array([vocab.counts.get(w, 0) ** Config.freq_exponent for w in vocab.idx2word], dtype=np.float64)
     freq[0] = 0             # because of <UNK> token
@@ -18,9 +19,10 @@ def build_unigram(
     rng = np.random.default_rng(seed)
     return rng.choice(len(vocab), table_size, p=freq).astype(np.int64)
 
-
+# Alias table: https://bfraboni.github.io/data/alias2022/alias-table.pdf
 def build_alias_table(vocab: Vocabulary) -> tuple[np.ndarray, np.ndarray]:
     """Build alias tables for O(1) sampling from unigram^exp distribution."""
+
     freq = np.array([vocab.counts.get(w, 0) ** Config.freq_exponent for w in vocab.idx2word], dtype=np.float64)
     freq[0] = 0  # <UNK>
     total = freq.sum()

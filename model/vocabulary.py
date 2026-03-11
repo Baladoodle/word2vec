@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from collections import Counter
+from config import Config
 
 @dataclass
 class Vocabulary:
@@ -28,7 +29,14 @@ class Vocabulary:
         return len(self.idx2word)
     
     def __str__(self) -> str:
-        return "\n".join(f"{w}: {c}" for w, c in self.counts.items() if c >= self.min_count)
+        items = [(w, c) for w, c in self.counts.items() if c >= self.min_count]
+        items.sort(key=lambda x: (-x[1], x[0]))
+        shown = items[: Config.vocab_print]
+        lines = [f"{w}: {c}" for w, c in shown]
+        remaining = len(items) - len(shown)
+        if remaining > 0:
+            lines.append(f"... + {remaining} more")
+        return "\n".join(lines)
     
     def lookup_token(self, idx: int) -> str:
         return self.idx2word[idx]

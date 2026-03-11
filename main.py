@@ -1,16 +1,12 @@
 from datasets import load_dataset
-from data.corpus import tokenize
+from data.corpus import token_stream
 from model.vocabulary import Vocabulary
 from config import Config
 
 ds = load_dataset("Salesforce/wikitext", "wikitext-103-raw-v1", split="train")
 
-full_text = " ".join(ds["text"])
-
-print(full_text[:1000])
-
 vocab = Vocabulary(min_count=Config.min_count, max_size=Config.max_vocab)
-vocab.build(tokenize(full_text))
+vocab.build(token_stream(ds["text"]))
 print(vocab)
 
 print(vocab.lookup_index("the"))
