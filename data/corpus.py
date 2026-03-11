@@ -1,4 +1,5 @@
 import re # Regular expressions
+import random
 
 def tokenize(text: str, keep_punct: bool = True) -> list[str]:
     """Tokenize a string. Optionally keep punctuation; always lowercase."""
@@ -19,3 +20,23 @@ def token_stream(lines: list[str], keep_punct: bool = True) -> list[str]:
             continue
         tokens.extend(tokenize(line, keep_punct=keep_punct))
     return tokens
+
+
+
+def iterate_center_context(
+    token_ids: list[int],
+    window_size: int,
+    seed: int | None = None,
+):
+    """Yield (center_id, context_id) with a dynamic window."""
+    rng = random.Random(seed)
+    n = len(token_ids)
+    for i in range(n):
+        window = rng.randint(1, window_size)
+        left = max(0, i - window)
+        right = min(n, i + window + 1)
+        center_id = token_ids[i]
+        for j in range(left, right):
+            if j == i:
+                continue
+            yield center_id, token_ids[j]
