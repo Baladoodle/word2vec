@@ -17,10 +17,10 @@ class Config:
     lr_start:           float       = 0.05              # Initial learning rate
     lr_end:             float       = 0.005             # Final learning rate
     train_tokens_limit: int | None  = 10_000_000        # Cap train tokens
-    max_steps:          int         = 100000            # Hard cap on training steps
+    max_steps:          int         = 60000             # Hard cap on training steps
     seed:               int | None  = 1337              # Training seed
 
     embeddings_out:     str         = "embeddings.npy"  # Embeddings output path
     vocab_out:          str         = "vocab.json"      # Vocab output path
     loss_log_every:     int         = 1000              # Log loss interval
-    use_cupy:           bool        = True             # Uses CuPy instead of NumPy for GPU accel. Requires CUDA 13.0+
+    use_cupy:           bool        = False              # Uses CuPy instead of NumPy for GPU accel. Requires CUDA 13.0+
