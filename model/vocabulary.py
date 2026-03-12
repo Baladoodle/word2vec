@@ -13,7 +13,7 @@ class Vocabulary:
     counts:   Counter        = field(default_factory=Counter)
 
     def build(self, tokens: list[str]) -> None:
-        """Build vocab mappings from a token list with min_count/max_size filters."""
+        """Build vocabulary mappings from a token list with min_count/max_size filters."""
         self.counts = Counter(tokens)
         kept = [(w, c) for w, c in self.counts.items() if c >= self.min_count]
         kept.sort(key=lambda x: (-x[1], x[0]))
@@ -32,7 +32,7 @@ class Vocabulary:
         return len(self.idx2word)
     
     def __str__(self) -> str:
-        """Pretty-print the most frequent tokens up to Config.vocab_print."""
+        """Print the most frequent tokens up to Config.vocab_print."""
         items = [(w, c) for w, c in self.counts.items() if c >= self.min_count]
         items.sort(key=lambda x: (-x[1], x[0]))
         shown = items[: Config.vocab_print]

@@ -13,7 +13,11 @@ import json
 
 def load_tokens():
     """Load and tokenize the training dataset into a flat token list."""
-    ds = load_dataset("Salesforce/wikitext", "wikitext-103-raw-v1", split="train")
+    ds = load_dataset(
+        Config.dataset_name,
+        Config.dataset_config,
+        split=Config.dataset_split,
+    )
     tokens = token_stream(ds["text"])
     if Config.train_tokens_limit is not None:
         tokens = tokens[: Config.train_tokens_limit]
@@ -68,14 +72,13 @@ def save_outputs(vocab: Vocabulary, w_in: np.ndarray) -> None:
     np.save(Config.embeddings_out, to_numpy(w_in))
 
 def main():
-    """End-to-end pipeline: load data, train embeddings, and save outputs."""
-    tokens = load_tokens()
-    vocab = build_vocab(tokens)
+    tokens = load_tokens()                          # Load tokens from disk
+    vocab = build_vocab(tokens)                     # Build vocabulary from tokens
 
-    token_ids = [vocab.encode(t) for t in tokens]
-    w_in, _ = train_skipgram(token_ids, vocab)
+    token_ids = [vocab.encode(t) for t in tokens]   # Encode tokens to token IDs
+    w_in, _ = train_skipgram(token_ids, vocab)      # Train skip-gram model
 
-    save_outputs(vocab, w_in)
+    save_outputs(vocab, w_in)                       # Output vocabulary and embeddings to disk
 
 if __name__ == "__main__":
     main()
