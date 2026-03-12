@@ -12,6 +12,7 @@ from config import Config
 import json
 
 def load_tokens():
+    """Load and tokenize the training dataset into a flat token list."""
     ds = load_dataset("Salesforce/wikitext", "wikitext-103-raw-v1", split="train")
     tokens = token_stream(ds["text"])
     if Config.train_tokens_limit is not None:
@@ -19,6 +20,7 @@ def load_tokens():
     return tokens
 
 def build_vocab(tokens: list[str]) -> Vocabulary:
+    """Build and return a Vocabulary from tokens using Config settings."""
     vocab = Vocabulary(min_count=Config.min_count, max_size=Config.max_vocab)
     vocab.build(tokens)
     return vocab
@@ -27,6 +29,7 @@ def train_skipgram(
     token_ids: list[int],
     vocab: Vocabulary,
 ) -> tuple[np.ndarray, np.ndarray]:
+    """Train skip-gram with negative sampling and return input/output embeddings."""
     w_in, w_out = init_embeddings(len(vocab), Config.embedding_dim, seed=Config.seed)
 
     total_steps = max(1, Config.max_steps)
@@ -41,7 +44,6 @@ def train_skipgram(
             negatives=Config.negatives,
             seed=None if Config.seed is None else Config.seed + epoch,
         ):
-            # Linear LR decay across total steps (approximate steps per epoch)
             t = min(global_step / max(1, total_steps - 1), 1.0)
             lr = Config.lr_start + (Config.lr_end - Config.lr_start) * t
             loss = negative_sampling_backward_update(
@@ -56,6 +58,7 @@ def train_skipgram(
     return w_in, w_out
 
 def save_outputs(vocab: Vocabulary, w_in: np.ndarray) -> None:
+    """Persist vocab and embeddings to disk based on Config paths."""
     with open(Config.vocab_out, "w", encoding="utf-8") as f:
         json.dump(
             {"idx2word": vocab.idx2word, "counts": dict(vocab.counts)},
@@ -65,6 +68,7 @@ def save_outputs(vocab: Vocabulary, w_in: np.ndarray) -> None:
     np.save(Config.embeddings_out, to_numpy(w_in))
 
 def main():
+    """End-to-end pipeline: load data, train embeddings, and save outputs."""
     tokens = load_tokens()
     vocab = build_vocab(tokens)
 
