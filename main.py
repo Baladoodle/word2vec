@@ -1,6 +1,6 @@
 from datasets import load_dataset
 import numpy as np
-from data.corpus import token_stream
+from data.corpus import token_stream, subsample_token_ids
 from model.training import (
     init_embeddings,
     iter_negative_sampling_batches,
@@ -28,6 +28,20 @@ def build_vocab(tokens: list[str]) -> Vocabulary:
     vocab = Vocabulary(min_count=Config.min_count, max_size=Config.max_vocab)
     vocab.build(tokens)
     return vocab
+
+def maybe_subsample(token_ids: list[int], vocab: Vocabulary) -> list[int]:
+    """Optionally apply word2vec-style subsampling based on Config."""
+    if Config.subsample_t is None or Config.subsample_t <= 0:
+        return token_ids
+    counts_by_id = [0] * len(vocab)
+    for idx in token_ids:
+        counts_by_id[idx] += 1
+    return subsample_token_ids(
+        token_ids,
+        counts_by_id,
+        Config.subsample_t,
+        seed=Config.seed,
+    )
 
 def train_skipgram(
     token_ids: list[int],
@@ -76,6 +90,7 @@ def main():
     vocab = build_vocab(tokens)                     # Build vocabulary from tokens
 
     token_ids = [vocab.encode(t) for t in tokens]   # Encode tokens to token IDs
+    token_ids = maybe_subsample(token_ids, vocab)
     w_in, _ = train_skipgram(token_ids, vocab)      # Train skip-gram model
 
     save_outputs(vocab, w_in)                       # Output vocabulary and embeddings to disk

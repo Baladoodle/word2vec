@@ -55,3 +55,27 @@ def batch_pairs(pairs_iter, batch_size: int):
             contexts.clear()
     if centers:
         yield np.array(centers, dtype=np.int64), np.array(contexts, dtype=np.int64)
+
+def subsample_token_ids(
+    token_ids: list[int],
+    counts_by_id: list[int],
+    t: float,
+    seed: int | None = None,
+) -> list[int]:
+    """Subsample tokens using word2vec's frequency-based keep probability."""
+    if t <= 0:
+        return token_ids
+    total = sum(counts_by_id)
+    if total <= 0:
+        return token_ids
+
+    rng = random.Random(seed)
+    kept: list[int] = []
+    for idx in token_ids:
+        f = counts_by_id[idx] / total
+        if f <= 0:
+            continue
+        p_keep = (t / f) ** 0.5
+        if p_keep >= 1.0 or rng.random() < p_keep:
+            kept.append(idx)
+    return kept

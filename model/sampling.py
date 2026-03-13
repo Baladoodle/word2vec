@@ -6,23 +6,6 @@ if TYPE_CHECKING:
 from model.vocabulary import Vocabulary
 from config import Config
 
-def build_unigram(
-    vocab: Vocabulary,
-    table_size: int = Config.table_size,
-    seed: int | None = Config.unigram_seed,
-) -> "np.ndarray": # one million
-    """Deprecated: use build_alias_table instead."""
-
-    freq = xp.array([vocab.counts.get(w, 0) ** Config.freq_exponent for w in vocab.idx2word], dtype=xp.float64)
-    freq[0] = 0             # because of <UNK> token
-    freq_sum = freq.sum()
-    if freq_sum <= 0:
-        return xp.zeros(table_size, dtype=xp.int64)
-    freq /= freq_sum        # normalize
-
-    rng = xp.random.default_rng(seed)
-    return rng.choice(len(vocab), table_size, p=freq).astype(xp.int64)
-
 # Alias table: https://bfraboni.github.io/data/alias2022/alias-table.pdf
 def build_alias_table(vocab: Vocabulary) -> tuple["np.ndarray", "np.ndarray"]:
     """Build alias tables for O(1) sampling from unigram^exp distribution."""
