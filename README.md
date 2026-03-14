@@ -1,8 +1,8 @@
-# word2vec (pure NumPy)
+# word2vec
 
 Based on the word2vec paper by Mikolov et al. (2013).
 
-This repo is a pure NumPy implementation of word2vec (skip-gram with negative sampling). It includes the full optimization procedure (forward pass, loss, gradients, and parameter updates) and is intentionally framework-free (no PyTorch / TensorFlow).
+This repo is a pure NumPy implementation of word2vec (skip-gram with negative sampling). It includes the full optimization procedure (forward pass, loss, gradients, and parameter updates) and is made only using NumPy.
 
 **Features**
 - Skip-gram with negative sampling (SGNS)
@@ -20,7 +20,7 @@ This repo is a pure NumPy implementation of word2vec (skip-gram with negative sa
 python main.py
 ```
 
-**Test Script**
+**Test Script**:
 Test the output embeddings in `extras/test.py`:
 ```bash
 python extras/test.py
@@ -32,7 +32,7 @@ Parameters:
 - `--topk`: Number of results to return (default: `10`)
 - `--analogy`: Three words `A B C` for analogy `A - B + C` (default: none)
 
-**Configuration**
+**Configuration**:
 Edit `config.py` to adjust the dataset, model size, training steps, and output paths. Any suitable text dataset is supported; the default uses a Hugging Face dataset.
 
 **Outputs**
