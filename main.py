@@ -1,5 +1,7 @@
 from datasets import load_dataset
+import math
 import numpy as np
+import time
 from data.corpus import token_stream, subsample_token_ids
 from model.training import (
     init_embeddings,
@@ -48,10 +50,17 @@ def train_skipgram(
     """Train skip-gram with negative sampling and return input/output embeddings."""
     w_in, w_out = init_embeddings(len(vocab), Config.embedding_dim, seed=Config.seed)
 
-    total_steps = max(1, Config.max_steps)
+    total_steps = max(1, Config.max_steps) if Config.max_steps is not None else 1
+    start_time = time.time()
+    steps_per_epoch_est = None
+    if Config.max_steps is None:
+        # Expected contexts per token ≈ (window_size + 1) with uniform dynamic window.
+        expected_pairs = len(token_ids) * (Config.window_size + 1)
+        steps_per_epoch_est = max(1, math.ceil(expected_pairs / Config.batch_size))
     global_step = 0
 
     for epoch in range(Config.epochs):
+        step_in_epoch = 0
         for centers, contexts, negatives in iter_negative_sampling_batches(
             token_ids,
             vocab,
@@ -60,15 +69,24 @@ def train_skipgram(
             negatives=Config.negatives,
             seed=None if Config.seed is None else Config.seed + epoch,
         ):
-            t = min(global_step / max(1, total_steps - 1), 1.0)
+            if Config.max_steps is None and steps_per_epoch_est is not None:
+                denom = max(1, Config.epochs * steps_per_epoch_est - 1)
+                t = min((epoch * steps_per_epoch_est + step_in_epoch) / denom, 1.0)
+            else:
+                t = min(global_step / max(1, total_steps - 1), 1.0)
             lr = Config.lr_start + (Config.lr_end - Config.lr_start) * t
             loss = negative_sampling_backward_update(
                 w_in, w_out, centers, contexts, negatives, lr=lr
             )
             if global_step % Config.loss_log_every == 0:
-                print(f"epoch={epoch+1} step={global_step} lr={lr:.6f} loss={loss:.4f}")
+                elapsed_s = time.time() - start_time
+                print(
+                    f"epoch={epoch+1} step={global_step} lr={lr:.6f} "
+                    f"loss={loss:.4f} elapsed_s={elapsed_s:.1f}"
+                )
             global_step += 1
-            if global_step >= Config.max_steps:
+            step_in_epoch += 1
+            if Config.max_steps is not None and global_step >= Config.max_steps:
                 return w_in, w_out
 
     return w_in, w_out

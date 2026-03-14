@@ -25,6 +25,12 @@ Test the output embeddings in `extras/test.py`:
 ```bash
 python extras/test.py
 ```
+Parameters:
+- `--emb`: Path to embeddings file (default: `embeddings.npy`)
+- `--vocab`: Path to vocab file (default: `vocab.json`)
+- `--word`: Query word for nearest neighbors (default: none)
+- `--topk`: Number of results to return (default: `10`)
+- `--analogy`: Three words `A B C` for analogy `A - B + C` (default: none)
 
 **Configuration**
 Edit `config.py` to adjust the dataset, model size, training steps, and output paths. Any suitable text dataset is supported; the default uses a Hugging Face dataset.
