@@ -45,7 +45,6 @@ def build_alias_table(vocab: Vocabulary) -> tuple["np.ndarray", "np.ndarray"]:
 
     return prob, alias
 
-
 def sample_alias(
     prob: "np.ndarray",
     alias: "np.ndarray",

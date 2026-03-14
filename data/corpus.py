@@ -62,7 +62,7 @@ def subsample_token_ids(
     t: float,
     seed: int | None = None,
 ) -> list[int]:
-    """Subsample tokens using word2vec's frequency-based keep probability."""
+    """Subsample tokens using frequency-based keep probability."""
     if t <= 0:
         return token_ids
     total = sum(counts_by_id)

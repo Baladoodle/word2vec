@@ -6,17 +6,24 @@ This repo is a pure NumPy implementation of word2vec (skip-gram with negative sa
 
 **Features**
 - Skip-gram with negative sampling (SGNS)
-- Full training loop in NumPy (forward, loss, gradients, updates)
+- Full training loop in NumPy 
 - Word2vec-style subsampling
 - Alias-table unigram sampling with exponent
 
 **Requirements**
 - Python 3.10+
 - `pip install -r requirements.txt`
+- CUDA 13.0+ required for CuPy (optional)
 
 **Quickstart**
 ```bash
 python main.py
+```
+
+**Test Script**
+Test the output embeddings in `extras/test.py`:
+```bash
+python extras/test.py
 ```
 
 **Configuration**

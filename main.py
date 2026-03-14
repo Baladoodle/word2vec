@@ -29,10 +29,8 @@ def build_vocab(tokens: list[str]) -> Vocabulary:
     vocab.build(tokens)
     return vocab
 
-def maybe_subsample(token_ids: list[int], vocab: Vocabulary) -> list[int]:
-    """Optionally apply word2vec-style subsampling based on Config."""
-    if Config.subsample_t is None or Config.subsample_t <= 0:
-        return token_ids
+def subsample(token_ids: list[int], vocab: Vocabulary) -> list[int]:
+    """Randomly remove tokens from token_ids."""
     counts_by_id = [0] * len(vocab)
     for idx in token_ids:
         counts_by_id[idx] += 1
@@ -90,7 +88,7 @@ def main():
     vocab = build_vocab(tokens)                     # Build vocabulary from tokens
 
     token_ids = [vocab.encode(t) for t in tokens]   # Encode tokens to token IDs
-    token_ids = maybe_subsample(token_ids, vocab)
+    if Config.subsample_t > 0: token_ids = subsample(token_ids, vocab)  # Subsample tokens
     w_in, _ = train_skipgram(token_ids, vocab)      # Train skip-gram model
 
     save_outputs(vocab, w_in)                       # Output vocabulary and embeddings to disk
