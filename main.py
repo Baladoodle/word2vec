@@ -106,6 +106,7 @@ def main():
     vocab = build_vocab(tokens)                     # Build vocabulary from tokens
 
     token_ids = [vocab.encode(t) for t in tokens]   # Encode tokens to token IDs
+    token_ids = [idx for idx in token_ids if idx != 0]  # Drop <UNK> from training
     if Config.subsample_t > 0: token_ids = subsample(token_ids, vocab)  # Subsample tokens
     w_in, _ = train_skipgram(token_ids, vocab)      # Train skip-gram model
 

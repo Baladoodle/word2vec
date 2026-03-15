@@ -8,7 +8,7 @@ class Config:
     vocab_print:        int             = 100           # Vocab __str__ limit
     table_size:         int             = 1000000       # Unigram table size (Deprecated)
 
-    # # GPU
+    # # GPU (3056.2s on a 4060 laptop)
     # embedding_dim:      int             = 256           # Embedding width
     # window_size:        int             = 5             # Context window
     # negatives:          int             = 8             # Negatives per positive
@@ -23,7 +23,7 @@ class Config:
     # subsample_t:        float | None    = 0.001         # word2vec subsampling threshold
     # use_cupy:           bool            = True          # Uses CuPy instead of NumPy for GPU accel. Requires CUDA 13.0+
 
-    # CPU
+    # CPU (4223.0s on a Ryzen 7 7435HS)
     embedding_dim:      int             = 128           # Embedding width
     window_size:        int             = 5             # Context window
     negatives:          int             = 5             # Negatives per positive
