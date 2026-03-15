@@ -33,7 +33,6 @@ def build_vocab(tokens: list[str]) -> Vocabulary:
 
 def subsample(token_ids: list[int], vocab: Vocabulary) -> list[int]:
     """Randomly remove tokens from token_ids."""
-    # Use true corpus counts so subsampling isn't skewed by <UNK> encoding.
     counts_by_id = [vocab.counts.get(word, 0) for word in vocab.idx2word]
     return subsample_token_ids(
         token_ids,
@@ -48,6 +47,8 @@ def train_skipgram(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Train skip-gram with negative sampling and return input/output embeddings."""
     w_in, w_out = init_embeddings(len(vocab), Config.embedding_dim, seed=Config.seed)
+    from model.sampling import build_alias_table
+    prob, alias = build_alias_table(vocab)
 
     total_steps = max(1, Config.max_steps) if Config.max_steps is not None else 1
     start_time = time.time()
@@ -67,6 +68,8 @@ def train_skipgram(
             batch_size=Config.batch_size,
             negatives=Config.negatives,
             seed=None if Config.seed is None else Config.seed + epoch,
+            prob=prob,
+            alias=alias,
         ):
             if Config.max_steps is None and steps_per_epoch_est is not None:
                 denom = max(1, Config.epochs * steps_per_epoch_est - 1)

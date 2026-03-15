@@ -104,9 +104,12 @@ def iter_negative_sampling_batches(
     batch_size: int,
     negatives: int,
     seed: int | None = None,
+    prob: "np.ndarray | None" = None,
+    alias: "np.ndarray | None" = None,
 ):
     """Yield (centers, contexts, negatives) batches for negative sampling."""
-    prob, alias = build_alias_table(vocab)
+    if prob is None or alias is None:
+        prob, alias = build_alias_table(vocab)
     pair_iter = iterate_center_context(
         token_ids,
         window_size=window_size,
