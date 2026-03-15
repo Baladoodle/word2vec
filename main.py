@@ -33,9 +33,8 @@ def build_vocab(tokens: list[str]) -> Vocabulary:
 
 def subsample(token_ids: list[int], vocab: Vocabulary) -> list[int]:
     """Randomly remove tokens from token_ids."""
-    counts_by_id = [0] * len(vocab)
-    for idx in token_ids:
-        counts_by_id[idx] += 1
+    # Use true corpus counts so subsampling isn't skewed by <UNK> encoding.
+    counts_by_id = [vocab.counts.get(word, 0) for word in vocab.idx2word]
     return subsample_token_ids(
         token_ids,
         counts_by_id,
